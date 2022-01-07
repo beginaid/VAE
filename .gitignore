@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# images, logs, and params
+images
+logs
+MNIST
+params
