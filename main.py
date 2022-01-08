@@ -22,9 +22,9 @@ class Main():
             None.
         """
         self.z_dim = z_dim
-        self.dataloader_train
-        self.dataloader_valid
-        self.dataloader_test
+        self.dataloader_train = None
+        self.dataloader_valid = None
+        self.dataloader_test = None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = VAE(self.z_dim).to(self.device)
         self.writer = SummaryWriter(log_dir="./logs")
@@ -75,6 +75,7 @@ class Main():
         self.dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size=1000, shuffle=True)
         self.dataloader_valid = torch.utils.data.DataLoader(dataset_valid, batch_size=1000, shuffle=False)
         self.dataloader_test = torch.utils.data.DataLoader(dataset_test, batch_size=1000, shuffle=False)
+        self.Visualize.dataloader_test = self.dataloader_test
 
     def train_batch(self):
         """Batch-based learning for training data
@@ -92,10 +93,10 @@ class Main():
             self.model.zero_grad()
             loss.backward()
             self.optimizer.step()
-            self.writer.add_scalar("Loss_train/KL", -lower_bound[0].cpu().detach().numpy(), self.num_iter + self.num_batch)
-            self.writer.add_scalar("Loss_train/Reconst", -lower_bound[1].cpu().detach().numpy(), self.num_iter + self.num_batch)
-            self.num_batch += 1
-        self.num_batch -= 1
+            self.writer.add_scalar("Loss_train/KL", -lower_bound[0].cpu().detach().numpy(), self.num_iter + self.num_batch_train)
+            self.writer.add_scalar("Loss_train/Reconst", -lower_bound[1].cpu().detach().numpy(), self.num_iter + self.num_batch_train)
+            self.num_batch_train += 1
+        self.num_batch_train -= 1
 
     def valid_batch(self):
         """Batch-based learning for validating data
@@ -111,10 +112,10 @@ class Main():
         for x, _ in self.dataloader_valid:
             lower_bound, _, _ = self.model(x, self.device)
             loss.append(-sum(lower_bound).cpu().detach().numpy())
-            self.writer.add_scalar("Loss_valid/KL", -lower_bound[0].cpu().detach().numpy(), self.num_iter + self.num_batch)
-            self.writer.add_scalar("Loss_valid/Reconst", -lower_bound[1].cpu().detach().numpy(), self.num_iter + self.num_batch)
-            self.num_batch += 1    
-        self.num_batch -= 1
+            self.writer.add_scalar("Loss_valid/KL", -lower_bound[0].cpu().detach().numpy(), self.num_iter + self.num_batch_valid)
+            self.writer.add_scalar("Loss_valid/Reconst", -lower_bound[1].cpu().detach().numpy(), self.num_iter + self.num_batch_valid)
+            self.num_batch_valid += 1    
+        self.num_batch_valid -= 1
         self.loss_valid = np.mean(loss)
         self.loss_valid_min = np.minimum(self.loss_valid_min, self.loss_valid)
 
@@ -142,7 +143,7 @@ class Main():
             self.train_batch()
             self.valid_batch()
             print(f"[EPOCH{self.num_iter + 1}] loss_valid: {int(self.loss_valid)} | Loss_valid_min: {int(self.loss_valid_min)}")
-            self.early_stopping(self.loss_valid)
+            self.early_stopping()
             if self.num_no_improved >= 10:
                 print("Apply early stopping")
                 break
