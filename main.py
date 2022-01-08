@@ -30,10 +30,11 @@ class Main():
         self.writer = SummaryWriter(log_dir="./logs")
         self.lr = 0.001
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
-        self.num_max_epochs = 3
+        self.num_max_epochs = 1000
         self.num_no_improved = 0
         self.num_batch_train = 0
         self.num_batch_valid = 0
+        self.loss_valid = 10 ** 7 # Initialize with a large value
         self.loss_valid_min = 10 ** 7 # Initialize with a large value
         self.Visualize = Visualize(self.z_dim, self.dataloader_test, self.model, self.device)
 
