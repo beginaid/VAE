@@ -52,19 +52,19 @@ class Visualize():
         Returns:
             None.
         """
-        for num_batch, x, _ in enumerate(self.dataloader_test):
+        for num_batch, data in enumerate(self.dataloader_test):
             fig, axes = plt.subplots(2, 10, figsize=(20, 4))
             for i in range(axes.shape[0]):
                 for j in range(axes.shape[1]): 
                     axes[i][j].set_xticks([])
                     axes[i][j].set_yticks([])
-            for i, im in enumerate(x.view(-1, 28, 28)[:10]):
+            for i, im in enumerate(data[0].view(-1, 28, 28)[:10]):
                 axes[0][i].imshow(im, "gray")
-            _, _, y = self.model(x, self.device)
+            _, _, y = self.model(data[0], self.device)
             y = y.cpu().detach().numpy().reshape(-1, 28, 28)
             for i, im in enumerate(y[:10]):
                 axes[1][i].imshow(im, "gray")
-            fig.savefig(f"./images/reconstruction/model_z_{self.z_dim}_{num_batch}.png")
+            fig.savefig(f"./images/reconstruction/z_{self.z_dim}_{num_batch}.png")
             plt.close(fig)
 
     def latent_space(self):
@@ -77,18 +77,17 @@ class Visualize():
             None.
         """
         cm = plt.get_cmap("tab10")
-        for num_batch, x, t in enumerate(self.dataloader_test):
-            t = t.detach().numpy()
+        for num_batch, data in enumerate(self.dataloader_test):
             fig_plot, ax_plot = plt.subplots(figsize=(9, 9))
             fig_scatter, ax_scatter = plt.subplots(figsize=(9, 9))
-            _, z, _ = self.model(x, self.device)
+            _, z, _ = self.model(data[0], self.device)
             z = z.detach().numpy()
             for k in range(10):
-                cluster_indexes = np.where(t==k)[0]
+                cluster_indexes = np.where(data[1].detach().numpy() == k)[0]
                 ax_plot.plot(z[cluster_indexes,0], z[cluster_indexes,1], "o", ms=4, color=cm(k))
                 ax_scatter.scatter(z[cluster_indexes,0], z[cluster_indexes,1], marker=f"${k}$", color=cm(k))
-            fig_plot.savefig(f"./images/latent_space/model_z_{self.z_dim}_{num_batch}_plot.png")
-            fig_scatter.savefig(f"./images/latent_space/model_z_{self.z_dim}_{num_batch}_scatter.png")
+            fig_plot.savefig(f"./images/latent_space/z_{self.z_dim}_{num_batch}_plot.png")
+            fig_scatter.savefig(f"./images/latent_space/z_{self.z_dim}_{num_batch}_scatter.png")
             plt.close(fig_plot)
             plt.close(fig_scatter)
 
@@ -114,7 +113,7 @@ class Visualize():
                 axes[i][j].set_yticks([])
                 axes[i][j].imshow(y[l * (l - 1 - i) + j], "gray")
         fig.subplots_adjust(wspace=0, hspace=0)
-        fig.savefig(f"./images/lattice_point/model_z_{self.z_dim}.png")
+        fig.savefig(f"./images/lattice_point/z_{self.z_dim}.png")
         plt.close(fig)
         
     def walkthrough(self):
@@ -152,8 +151,8 @@ class Visualize():
             ax.set_xticks([])
             ax.set_yticks([])
             images = []
-            for i, im in enumerate(y1_to_y2_list[n]):
+            for _, im in enumerate(y1_to_y2_list[n]):
                 images.append([ax.imshow(im, "gray")])
             animation = ArtistAnimation(fig, images, interval=100, blit=True, repeat_delay=1000)
-            animation.save(f"./images/walkthrough/linear_change_{n}.gif", writer="pillow")
+            animation.save(f"./images/walkthrough/z_{self.z_dim}_{n}.gif", writer="pillow")
             plt.close(fig)
