@@ -104,7 +104,7 @@ class Visualize():
         x = np.linspace(-2, 2, l)
         y = np.linspace(-2, 2, l)
         z_x, z_y = np.meshgrid(x, y)
-        Z = torch.tensor(np.array([z_x, z_y]), dtype=torch.float).permute(1, 2, 0)
+        Z = torch.tensor(np.array([z_x, z_y]), dtype=torch.float).permute(1, 2, 0).to(self.device)
         y = self.model.decoder(Z).cpu().detach().numpy().reshape(-1, 28, 28)
         fig, axes = plt.subplots(l, l, figsize=(9, 9))
         for i in range(l):
