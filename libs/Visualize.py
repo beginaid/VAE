@@ -140,7 +140,7 @@ class Visualize():
         y1_to_y2_list = []
         # Store latent variables which are linearly changed from a start point to goal point
         for z1, z2 in zip(z1_list, z2_list):
-            z1_to_z2_list.append(torch.cat([((z1 * ((step - i) / step)) + (z2 * (i / step))) for i in range(step)]).reshape(step, self.z_dim))
+            z1_to_z2_list.append(torch.cat([((z1 * ((step - i) / step)) + (z2 * (i / step))) for i in range(step)]).reshape(step, self.z_dim).to(self.device))
         # Store the output of each latent variable from the decoder
         for z1_to_z2 in z1_to_z2_list:
             y1_to_y2_list.append(self.model.decoder(z1_to_z2).cpu().detach().numpy().reshape(-1, 28, 28))
