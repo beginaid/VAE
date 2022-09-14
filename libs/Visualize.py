@@ -38,9 +38,9 @@ class Visualize():
         if not os.path.exists("./images/latent_space"):
             os.makedirs("./images/latent_space")
         if not os.path.exists("./images/lattice_point"):
-            os.makedirs("./images/lattice_point")    
+            os.makedirs("./images/lattice_point")
         if not os.path.exists("./images/walkthrough"):
-            os.makedirs("./images/walkthrough")    
+            os.makedirs("./images/walkthrough")
 
 
     def reconstruction(self):
@@ -55,7 +55,7 @@ class Visualize():
         for num_batch, data in enumerate(self.dataloader_test):
             fig, axes = plt.subplots(2, 10, figsize=(20, 4))
             for i in range(axes.shape[0]):
-                for j in range(axes.shape[1]): 
+                for j in range(axes.shape[1]):
                     axes[i][j].set_xticks([])
                     axes[i][j].set_yticks([])
             for i, im in enumerate(data[0].view(-1, 28, 28)[:10]):
@@ -81,9 +81,9 @@ class Visualize():
             fig_plot, ax_plot = plt.subplots(figsize=(9, 9))
             fig_scatter, ax_scatter = plt.subplots(figsize=(9, 9))
             _, z, _ = self.model(data[0], self.device)
-            z = z.detach().numpy()
+            z = z.cpu().detach().numpy()
             for k in range(10):
-                cluster_indexes = np.where(data[1].detach().numpy() == k)[0]
+                cluster_indexes = np.where(data[1].cpu().detach().numpy() == k)[0]
                 ax_plot.plot(z[cluster_indexes,0], z[cluster_indexes,1], "o", ms=4, color=cm(k))
                 ax_scatter.scatter(z[cluster_indexes,0], z[cluster_indexes,1], marker=f"${k}$", color=cm(k))
             fig_plot.savefig(f"./images/latent_space/z_{self.z_dim}_{num_batch}_plot.png")
@@ -115,7 +115,7 @@ class Visualize():
         fig.subplots_adjust(wspace=0, hspace=0)
         fig.savefig(f"./images/lattice_point/z_{self.z_dim}.png")
         plt.close(fig)
-        
+
     def walkthrough(self):
         """Creating animations of the reconstructed images obtained by walking through the latent space
 
