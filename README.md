@@ -13,6 +13,9 @@ This repository is for sharing the scripts of VAE.
 You can train MNIST with any number of latent variable dimensions, and
 visualize the latent space from multiple perspectives.
 
+# Requirement
+- Python: 3.7
+- fire: 0.4
 
 # Usage
 You can use the following command to train and visualize VAE.
