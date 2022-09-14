@@ -84,9 +84,10 @@ class VAE(nn.Module):
             KL (torch.float): KL divergence
             reconstruction (torch.float): Reconstruction error
             z (torch.tensor): Latent variable whose size is (Batch size, z_dim).
-            y (torch.tensor): Reconstruction data whose size is (batch size, x_dim).        
+            y (torch.tensor): Reconstruction data whose size is (batch size, x_dim).
         """
-        mean, log_var = self.encoder(x.to(device))
+        x = x.to(device)
+        mean, log_var = self.encoder(x)
         z = self.sample_z(mean, log_var, device)
         y = self.decoder(z)
         KL = 0.5 * torch.sum(1 + log_var - mean**2 - torch.exp(log_var))
