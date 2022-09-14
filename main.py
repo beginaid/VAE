@@ -115,7 +115,7 @@ class Main():
             loss.append(-sum(lower_bound).cpu().detach().numpy())
             self.writer.add_scalar("Loss_valid/KL", -lower_bound[0].cpu().detach().numpy(), self.num_iter + self.num_batch_valid)
             self.writer.add_scalar("Loss_valid/Reconst", -lower_bound[1].cpu().detach().numpy(), self.num_iter + self.num_batch_valid)
-            self.num_batch_valid += 1    
+            self.num_batch_valid += 1
         self.num_batch_valid -= 1
         self.loss_valid = np.mean(loss)
         self.loss_valid_min = np.minimum(self.loss_valid_min, self.loss_valid)
@@ -151,7 +151,7 @@ class Main():
         self.writer.close()
         print("-----Stop training-----")
         print("-----Start Visualization-----")
-        self.model.load_state_dict(torch.load(f"./params/model_z_{self.z_dim}.pth"))
+        self.model.load_state_dict(torch.load(f"./params/model_z_{self.z_dim}.pth")).to(self.device)
         self.model.eval()
         self.Visualize.createDirectories()
         self.Visualize.reconstruction()
@@ -159,6 +159,6 @@ class Main():
         self.Visualize.lattice_point()
         self.Visualize.walkthrough()
         print("-----Stop Visualization-----")
-    
+
 if __name__ == '__main__':
     fire.Fire(Main)
