@@ -151,7 +151,7 @@ class Main():
         self.writer.close()
         print("-----Stop training-----")
         print("-----Start Visualization-----")
-        self.model.load_state_dict(torch.load(f"./params/model_z_{self.z_dim}.pth")).to(self.device)
+        self.model.load_state_dict(torch.load(f"./params/model_z_{self.z_dim}.pth"))
         self.model.eval()
         self.Visualize.createDirectories()
         self.Visualize.reconstruction()
